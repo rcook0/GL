@@ -1,0 +1,146 @@
+package AnalogClock;
+
+import AnalogClock.*;
+import java.awt.Color;
+
+/**
+ * A Class class.
+ * <P>
+ * @author 
+ */
+
+public class View3dTest extends ApplicationFrame {
+
+  /**
+   * Constructs a new instance.
+   */
+  public View3dTest() {
+    super();
+    try  {
+      jbInit();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Initializes the state of this instance.
+   */
+
+  public static void main(String[] args) {
+
+    //Define the vertices and edges of a cube
+
+    View3d v = new View3d();
+    View3dTest test = new View3dTest();
+    CompoundGraphicObject2d cgo2d = new CompoundGraphicObject2d();
+
+    test.myDrawing.add(cgo2d);
+
+    Vector4d a = new Vector4d(0, 0, 1);
+    Vector4d b = new Vector4d(0, 1, 0);
+    Vector4d c = new Vector4d(0, 1, 1);
+    Vector4d d = new Vector4d(1, 0, 0);
+    Vector4d e = new Vector4d(1, 0, 1);
+    Vector4d f = new Vector4d(1, 1, 0);
+    Vector4d g = new Vector4d(1, 1, 1);
+    Vector4d h = new Vector4d(0, 0, 0);
+
+    Vector4d[] cube = {a, b, c, d, e, f, g, h};
+
+    /* Convert each point of the cube to the canonical perspective projection
+    view volume. */
+    for (int i = 0; i < 8; i++){
+        Transformation3d scaleOp = new Transformation3d();
+        scaleOp.scale(5, 5, 5);
+        cube[i].transform(scaleOp);
+        cube[i].homogenize();
+
+        cube[i].transform(v.nPer());
+        //cube[i].homogenize();
+        //System.out.println(cube[i].toString());
+    }
+
+    Line3d la = new Line3d(a, c);
+    Line3d lb = new Line3d(c, g);
+    Line3d lc = new Line3d(g, e);
+    Line3d ld = new Line3d(e, a);
+    Line3d le = new Line3d(h, d);
+    Line3d lf = new Line3d(d, f);
+    Line3d lg = new Line3d(f, b);
+    Line3d lh = new Line3d(b, h);
+    Line3d li = new Line3d(f, g);
+    Line3d lj = new Line3d(b, c);
+    Line3d lk = new Line3d(d, e);
+    Line3d ll = new Line3d(h, a);
+
+    Line3d[] lines = {la, lb, lc, ld, le, lf, lg, lh, li, lj, lk, ll};
+    boolean[] accept = {false, false, false, false, false, false, false, false, false, false, false, false};
+    Vector4d[] hlines = {new Vector4d(), new Vector4d(), new Vector4d(), new Vector4d(),
+               new Vector4d(), new Vector4d(), new Vector4d(), new Vector4d(),
+               new Vector4d(), new Vector4d(), new Vector4d(), new Vector4d(),
+               new Vector4d(), new Vector4d(), new Vector4d(), new Vector4d(),
+               new Vector4d(), new Vector4d(), new Vector4d(), new Vector4d(),
+               new Vector4d(), new Vector4d(), new Vector4d(), new Vector4d()};
+
+    /* Construct the perspective projection matrix */
+
+    BasicProjection Mper = new BasicProjection();
+    Mper.perspective(-1);
+
+    /* Clip against the canonical perspective view volume. */
+
+    for(int i = 0; i < 12 ; i++){
+      accept[i] = v.clip3d(lines[i], 1.333333); //zmin = -1
+      //if(!accept[i]) System.out.println("Decline " + i);
+    if(accept[i]){
+      //System.out.println("Accept " + i);
+      hlines[2*i] = new Vector4d(lines[i].getSourcePoint());
+      hlines[(2*i)+1] = new Vector4d(lines[i].getDestinationPoint());
+      hlines[2*i].homogenize();
+      hlines[(2*i)+1].homogenize();
+
+      /* Perform the perspective projection. */
+
+      hlines[2*i].transform(Mper);
+      hlines[(2*i)+1].transform(Mper);
+
+      /* 3D viewport transformations:
+      1. Conversion from perspective to parallel canonical view volume.
+      2. Transformation to the 3D viewport. */
+
+      Transformation3d t = new Transformation3d();
+      t.tPerspectiveToParallelCVV(v.f(), v.b(), new Vector4d(v.prp()));
+      hlines[2*i].transform(t);
+      hlines[(2*i)+1].transform(t);
+
+      hlines[2*i].homogenize();
+      hlines[(2*i)+1].homogenize();
+
+      hlines[2*i].transform(v.mVV3DV());
+      hlines[(2*i)+1].transform(v.mVV3DV());
+
+      //System.out.println(hlines[2*i].toString() + "  " + hlines[(2*i)+1].toString());
+
+      cgo2d.add(new Line2d(hlines[2*i].x(), hlines[2*i].y(), hlines[(2*i)+1].x(), hlines[(2*i)+1].y()));
+    }
+
+      try {
+        test.initComponents();
+        test.setLocation(new java.awt.Point(200, 150));
+        test.setSize(300, 200);
+        test.setTitle("C U B E");
+        test.setVisible(true);
+        test.setBackground(Color.white);
+        }
+      catch (Exception ex) {
+        ex.printStackTrace();
+        }
+
+      }
+
+    // hlines is a list of the start- and end-points of the cube's edges.
+  }
+
+}

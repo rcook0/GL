@@ -1,0 +1,186 @@
+package AnalogClock;
+
+import javax.swing.*;
+
+/**
+ * A Class class.
+ * <P>
+ * @author 
+ */
+
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+import java.awt.Dimension;
+import java.awt.Color;
+
+public class ApplicationFrame extends JFrame implements Runnable {
+
+  protected Buffer myBuffer = new Buffer();
+
+  protected Drawing2d myDrawing = new Drawing2d();
+
+  private MainMenu mainMenu = new MainMenu();
+
+  Thread thr = new Thread(this);
+
+  /**
+  Unfortunately, the Timer cannot be used for controlling the frame update cycle
+  because its effect is to fire events at specified intervals; this locks the repaint()
+  out of the event loop because the actionPerformed() call is part of the event which
+  must be successfully completed _before_ the repaint(), another event, can be attended
+  to. The result is that AWT's Repaint Manager never gets a chance to call the Buffer's
+  repaint cycle and, though the Clock's geometric model will still be updated in a
+  timely manner, the Buffer will never refresh the component's display. The timer will,
+  however, perform the animation in real-time, though the interval timing is not
+  necessarily adhered to accurately by the threaded AWT event loop that fires the
+  periodic timer event. However, it is probably the best way to get a reasonably
+  constant update of the constructive geometry hierarchy without resorting to a
+  for(;;) loop.
+  */
+
+  private static final int REAL_UPDATE = (int)1000/60;
+  private static final int SLOW_UPDATE = (int)1000/4;
+  private static final int CARTOON_UPDATE = (int)1000/24;
+
+  // Picture update rate is specified in milliseconds.
+  private int UPDATE_RATE = 500;
+
+
+
+
+  private Timer timer = new Timer(UPDATE_RATE, new java.awt.event.ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      timer_actionPerformed(e);
+    }
+  } );
+
+
+
+/* // This event is fired by the timer. Update the moving parts of the clock face,
+noting that the use of actual time units in the instance means that the clock is very
+easy to set. */
+
+    public void timer_actionPerformed(ActionEvent e) {
+         updatePicture();
+    }
+
+
+  /**
+   * Constructs a new instance.
+   */
+  public ApplicationFrame() {
+
+    setTitle("ApplicationFrame");
+
+    myBuffer.setDrawing(myDrawing);
+
+    thr.start();
+
+  	addMouseListener ( new MouseAdapter()  {
+			public void mousePressed(MouseEvent evt) {
+				updatePicture();
+				}
+			});
+
+
+    try  {
+      jbInit();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  public void run() {
+    System.out.println("run()...");
+  }
+
+  public void updatePicture() {
+    System.out.println("UpdatePicture()...");
+    }
+
+  private void this_keyPressed(KeyEvent e) {
+    char k = e.getKeyChar();
+    if(k == 'A')
+      updatePicture();
+  }
+
+  /**
+   * Initializes the state of this instance.
+   */
+  protected void jbInit() throws Exception {
+
+    mainMenu.setToolTipText("Analog Clock !");
+    this.setJMenuBar(mainMenu);
+
+    this.addKeyListener(
+      new java.awt.event.KeyAdapter() {
+        public void keyPressed(KeyEvent e) {
+          this_keyPressed(e);
+        }
+      });
+  }
+
+  public void thisWindowClosing(java.awt.event.WindowEvent e) {
+	// Close the window when the close box is clicked
+	  setVisible(false);
+	  dispose();
+	  System.exit(0);
+  }
+
+  public void initComponents() throws Exception {
+
+    //Initialize additional UI components
+    jbInit();
+
+		getContentPane().add(myBuffer);
+
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				thisWindowClosing(e);
+			}
+		});
+
+    myBuffer.animateStart();
+
+    timer.start();
+  }
+
+  /* Attach and retrieve the current main manu bar (JMenuBar or derivatives) to
+  or of this application frame. */
+  public JMenuBar getMainMenu() {
+    return mainMenu;
+  }
+
+  public void setMainMenu(JMenuBar newMenu) {
+    mainMenu = (MainMenu)newMenu;
+  }
+/*
+  public void show() {
+    this.setVisible(true);
+    }
+
+  public void hide() {
+    this.setVisible(false);
+    }
+*/
+  /**
+   * main
+   * @param args
+   */
+  public void main() {
+
+  try {
+		ApplicationFrame applicationFrame = new ApplicationFrame();
+		applicationFrame.initComponents();
+		applicationFrame.show();
+		}
+	catch (Exception e) {
+		e.printStackTrace();
+		}
+  }
+}
+
+

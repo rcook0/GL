@@ -1,0 +1,52 @@
+
+//Title: Menu Bar for the Viewing Test.
+//Copyright: 2001, Ryan L Cook
+//Author: Ryan Lovbjerg Cook
+//Company: Integrated Systems Corporation, Santa Clara, California
+
+package  AnalogClock;
+
+import javax.swing.*;
+
+public class ViewTest_Menu1 extends JMenuBar {
+  JMenu FileMenu = new JMenu();
+  JMenu EditMenu = new JMenu();
+  JMenu HelpMenu = new JMenu();
+  JMenuItem menuItem7 = new JMenuItem();
+  JMenuItem menuItem8 = new JMenuItem();
+  JMenuItem menuItem19 = new JMenuItem();
+  JMenuItem jMenuItem1 = new JMenuItem();
+  JMenuItem jMenuItem2 = new JMenuItem();
+
+  public ViewTest_Menu1() {
+    try {
+      jbInit();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void jbInit() throws Exception {
+    FileMenu.setText("File");
+    EditMenu.setText("Edit");
+    HelpMenu.setText("Help");
+    jMenuItem1.setText("About GraphicsPackage ...");
+    jMenuItem2.setText("Load new geometry ...");
+
+    this.add(FileMenu);
+    this.add(EditMenu);
+    this.add(HelpMenu);
+
+    menuItem7.setText("Exit");
+    menuItem8.setText("Viewing Parameters ...");
+    menuItem19.setText("About View3dTest ...");
+
+    FileMenu.add(jMenuItem2);
+    FileMenu.add(menuItem7);
+    EditMenu.add(menuItem8);
+    HelpMenu.add(menuItem19);
+    HelpMenu.add(jMenuItem1);
+  }
+}
+                         
