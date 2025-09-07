@@ -1,0 +1,16 @@
+package GraphicsPackage;
+
+public class ForeignObjectException extends Throwable {
+
+	String message = "";
+
+	public ForeignObjectException(){}
+
+	public ForeignObjectException(String msg){
+		message = msg; }
+
+	public String getMessage(){
+		return("The object could not be identified as a 2D geometry object.");
+	}
+
+}

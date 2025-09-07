@@ -1,0 +1,46 @@
+package GraphicsPackage;
+
+import java.util.*;
+import java.awt.*;
+
+/**
+Drawing2d is a high-level container for graphics data, and forms the top
+of the object hierarchy. 
+
+* <P>
+* @author Ryan L Cook.
+**/
+
+public class Drawing2d extends CompoundGraphicObject2d{
+
+// The following definitions are in super, but shown below for legibility.
+//	Vector parts = new Vector();
+//	int numberOfParts = 0;
+
+	Drawing2d(){
+	}
+
+	public void add(GraphicObject2d o){
+		super.add(o);
+	}
+
+	public void transform(Transformation2d trans){
+		super.transform(trans);
+	}
+
+	public void draw(Graphics g){
+		super.draw(g);
+	}
+
+	public void erase(Graphics g){
+		super.erase(g);
+	}
+
+  /** 
+  Remove all graphics objects from the drawing.
+  **/
+  public void clear(){
+    parts.clear();
+  }
+
+}//Drawing2d

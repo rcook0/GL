@@ -1,0 +1,293 @@
+package GraphicsPackage;
+
+import AnalogClock.*;
+import java.awt.geom.*;
+import java.awt.*;
+
+/**
+ * <P>
+ * @author Ryan L Cook
+ */
+public class Widget2d extends GraphicObject2d {
+
+/**
+Widget2d is a filled square shape
+that acts as an interface between the picture and the mouse pointer.
+It is created and controlled by a graphics application whose responsibility it is
+to add the widget to the model for the shape that it must represent. Inheritance of
+GraphicObject2d ensures that the double buffer will update it, as a member of the
+hierarchy, according to its current state.
+The application receives feedback from the buffer about any relevant interaction
+by the interaction device.
+*/
+
+  // Where to draw this widget
+  private Point2d position = new Point2d(0, 0); 
+  /* Size of this widget for mouse tracking purposes. Bounding rectangle is
+  centred around the widget's position. */
+  private Dimension boundingRect = new Dimension(0, 0);
+  /* Set whether we currently want to see the widget on the display. */
+  private boolean visible = false;
+  /* Track whether the mouse is pressed on this widget. */
+  private boolean selected = false;
+  /* The containing object to which this widget was added.*/
+  private CompoundGraphicObject2d owner = new CompoundGraphicObject2d();
+
+  private static Color cSelected = new Color(255, 0, 0); // RED
+  private static Color cUnselected = new Color(0, 0, 255); // BLUE
+  
+  /**
+   * Constructor
+   */
+
+  /** Default constructor. Widget will work, but fields must be set in order for proper use. */
+  public Widget2d() {
+    // Accept defaults initialized above.
+  }
+
+  /** Basic constructor setting widget's position and a bounding rectangle around it. */
+  public Widget2d(Point2d pos, Dimension bounds) {
+    position = pos;
+    boundingRect = bounds;
+    // visibiity does not change here.
+  }
+
+  /** Extended constructor allowing visibility and ownership to be set. */
+  public Widget2d(Point2d pos, Dimension bounds, boolean vis, CompoundGraphicObject2d obj) {
+    position = pos;
+    boundingRect = bounds;
+    visible = vis;
+    owner = obj;
+  }
+  
+  public Point2d getPosition() {
+    return position;
+  }
+
+  public void setPosition(Point2d newPosition) {
+    position = newPosition;
+  }
+
+  public Dimension2D getBoundingRect() {
+    return boundingRect;
+  }
+
+  public void setBoundingRect(Dimension newBoundingRect) {
+    boundingRect = newBoundingRect;
+  }
+
+  public boolean getVisible() {
+    return visible;
+  }
+
+  public void setVisible(boolean vis) {
+    visible = vis;
+  }
+
+  public CompoundGraphicObject2d getOwner() {
+    return owner;
+  }
+
+  public void setOwner(CompoundGraphicObject2d inObj) {
+    owner = inObj;
+  }
+
+  /** Mark up this widget as being selected. */
+  public void select() {
+    selected = true;
+  }
+
+  /** Deselect this widget. */
+  public void deselect() {
+    selected = false;
+  }
+
+  /*
+  // Draw with the colour appropriate for when the widget is selected. Return the previously set colour.
+  private Color setSelectionColour(Graphics g) {
+    g.setColor(cSelected);
+  }
+  */
+  
+  /** Check if a widget's bounding box has the point (x, y). */
+  public boolean hasPoint(int x, int y) {
+    int diffX = (int)boundingRect.getWidth() / 2;
+    int diffY = (int)boundingRect.getHeight() / 2;
+
+    // Cursor must be at position +- half the bounding dimension
+    if ( ( (position.x() - diffX) < x) && (x < (position.x() + diffX) ) ) {
+      if ( ( (position.y() - diffY) < y) && (y < (position.y() + diffY) ) ) {
+         return true;
+         }
+         }
+    return false;
+  }
+
+  /** Attempt to select the widget. If the specified (mouse) coordinate is in this
+  widget's bounding box, mark the widget as selected, else deselect it. */
+  public void trySelect(int x, int y) {
+    if (hasPoint(x, y))
+      select();
+    else
+      deselect();
+  }
+  
+  /** Routine to convert a global mouse coordinate to the local coordinates of a
+  picture object. */
+  public Point2d translatePoint(Point2d ourPoint, double dx, double dy) {
+    Point2d newPoint = new Point2d(ourPoint.x() + dx, ourPoint.y() + dy);
+    return newPoint;
+  }
+
+  
+  /* The following procedures do some mathematics to help with mouse handling.
+  */
+
+  /*
+  private double gradient(Point2d centre, Point2d pointer) {
+    return 0.0;
+  }*/
+
+
+  
+
+  
+  //Vector2d.java
+  
+  /** Return the relative angle between two points, in radians. Can be applied when
+  drawing the graphic feedback for a direct-maipulation graphic interface. */
+  public double angleOfRotation(Point2d pSrc, Point2d pDest) {
+    // Get access to a trignometric lookup table.
+    RadianSinLookup table = new RadianSinLookup();
+
+    // Calculate the vector from the source to the destination point.
+    Point2d srcToDestVect = new Point2d(pDest.x() - pSrc.x(), pDest.y() - pSrc.y());
+
+    /* The X and Y components are used to find out the quadrant of this vector's
+       direction, account for special cases where the vector points directly north,
+       east, south or west, and calculate the angle that it makes with the X- or Y-
+       axis. */
+    double vX = srcToDestVect.x();
+    double vY = srcToDestVect.y();
+    
+    // Compare the points to find out Quadrant of angle made between 0 degrees and
+    // the vector directed from pSrc to pDest.
+
+    if (pSrc == pDest) // Points are equal. Return default zero heading.
+      return 0.0;
+    
+    int quad = 0;
+    double angle = 0.0;
+
+    if ( (vX == 0) && (vY > 0) ) // Vector points directly north.
+      return 0.0;
+    if ( (vX == 0) && (vY < 0) ) // Vector points directly south.
+      return Math.PI/2;
+    if ( (vX > 0) && (vY == 0) ) // Vector points directly east.
+      return Math.PI;
+    if ( (vX < 0) && (vY == 0) ) // Vector points directly west.
+      return 3 * Math.PI/2;
+      
+    if ( (vX > 0) && (vY > 0) ) 
+    {
+      quad = 1; // Vector has positive X- and Y-axis direction, is within quadrant one.
+    }
+    else if ( (vX > 0) && (vY < 0) ) 
+    {
+      quad = 2;
+    }
+    else if ( (vX < 0) && (vY < 0) ) 
+    {
+      quad = 3;
+    }
+    else /*( (vX < 0) && (vY > 0) ) case included for completeness. */
+    {
+      quad = 4;
+    }
+
+    /*
+    sum = the angle of rotation, in radians, through all full quadrants included
+    clockwise between the 12 o'clock direction and the angle of rotation.
+    */
+    double sum = (Math.PI / 2.0) * (quad - 1);
+    
+    double denom = Math.sqrt( Math.pow(vX, 2.0) + Math.pow(vY, 2.0) );
+    double trig_div = 0.0;
+    
+    switch (quad) {
+      case 1 : { return sum + ( Math.PI/2 - table.radianAngleOf ( Math.sqrt(Math.pow(vY, 2.0)) / denom ) ); }
+      case 2 : { return sum + table.radianAngleOf ( Math.sqrt(Math.pow(vY, 2.0) ) / denom); }
+      case 3 : { return sum +( Math.PI/2 - table.radianAngleOf ( Math.sqrt(Math.pow(vY, 2.0)) / denom ) ); }
+      case 4 : { return sum + table.radianAngleOf ( Math.sqrt(Math.pow(vY, 2.0) ) / denom); }
+    }
+
+    /*
+    After the previous statement, all poss. cases have been covered. Return default 0.0
+    but this is definately an error that must be addressed locally.
+    */
+
+    // throw error...
+
+    // This statement should never be reached.
+    return 0.0;
+    
+    /*
+    The following function call treats the trigonometric ratio as a sine,
+    calculating its inverse sine in radians.
+    */
+    //System.out.println("Lookup returned: " + table.radianAngleOf(trig_div) );
+  }
+  
+
+
+
+  
+  public void draw(Graphics g) {
+    if (visible) { // we may choose not to show the widget, so check for this case.
+      super.draw(g); // inherit paintbrush style
+      //Color c;
+      if (selected) 
+      {
+      // Ensure that the widget is drawn in the appropriate colour, by overriding the default paint colour.
+        g.setColor(cSelected);
+        //c = setSelectionColour(g); 
+      }
+      else
+      {
+        g.setColor(cUnselected);
+      }
+      g.fillRect( (int)(position.x() - (boundingRect.getWidth()/2)), (int)(position.y() - (boundingRect.getHeight()/2)), (int)boundingRect.getWidth(), (int)boundingRect.getHeight() );
+    }
+  }
+
+  public void erase(Graphics g) {
+    if (visible) {
+      super.draw(g);
+      // Keep the default erase colour.
+      g.fillRect((int)position.x(), (int)position.y(), (int)boundingRect.getWidth(), (int)boundingRect.getHeight());
+    }
+  }
+
+
+  
+  /** Transform the widget's position, perhaps in response to mouse events. */
+  public void transform(Transformation2d trans) {
+    position.transform(trans);
+  }
+
+/**
+Test stub. 
+*/
+public static void main(String[] args) {
+  Widget2d myWidget = new Widget2d();
+  System.out.println("Angle from 0 0 to 1 2 : " + myWidget.angleOfRotation(new Point2d(0, 0), new Point2d(1, 2)) );
+  System.out.println("Angle from 0 0 to 1 -1 : " + myWidget.angleOfRotation(new Point2d(0, 0), new Point2d(1, -1)) );
+  System.out.println("Angle from 0 0 to -1 -2 : " + myWidget.angleOfRotation(new Point2d(0, 0), new Point2d(-1, -2)) );
+  System.out.println("Angle from 0 0 to -1 1 : " + myWidget.angleOfRotation(new Point2d(0, 0), new Point2d(-1, 1)) );
+
+  }
+  
+}
+
+
+

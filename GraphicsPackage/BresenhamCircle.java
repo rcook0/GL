@@ -1,0 +1,139 @@
+package GraphicsPackage;
+
+import java.lang.*;
+import java.awt.*;
+
+/**
+ * Bresenham scan-converted circle in two dimensions,
+   exploiting the eight-way symmetry of the circle.
+   The midpoint circle algorithm is adapted to draw around the specified centre
+   point.
+ * <P>
+ * @author Ryan L Cook
+ */
+
+public class BresenhamCircle extends GraphicObject2d {
+
+  private Point2d centre = new Point2d(0.0, 0.0);
+  private int radius = 0;
+  // Set default colour to draw.
+  private Color colour = new Color(0, 0, 225);
+
+  /**
+   * Constructors and field-get-set's
+   */
+  public BresenhamCircle() {
+
+    }
+
+  public BresenhamCircle(Point2d c, int r){
+    centre = c;
+    radius = r;
+    // colour stays as default
+    }
+
+  public BresenhamCircle(Point2d c, int r, Color col){
+    centre = c;
+    radius = r;
+    colour = col;
+    }
+
+  public Point2d getCentre(){
+    return centre;
+    }
+
+  public void setCentre(Point2d c){
+    centre = c;
+    }
+
+  public int getRadius(){
+    return radius;
+    }
+
+  public void setRadius(int r){
+    radius = r;
+    }
+
+  public Color getColour(){
+    return colour;
+    }
+
+  public void setColour(Color c){
+    colour = c;
+    }
+
+
+  /**
+   * GraphicObject2d implementation
+   */
+
+  public void draw(Graphics g){
+    super.draw(g);
+    drawCircle(centre, radius, g);
+    }
+
+  public void transform(Transformation2d trans){
+    // Will be implemented if circles are needed in animation, but not currently.
+    System.out.println("BresenhamCircle.transform not implemented");
+    }
+
+  public void erase(Graphics g){
+    super.erase(g);
+    drawCircle(centre, radius, g);
+    }
+
+  protected void drawCircle(Point2d centre, int radius, Graphics g){
+  /**
+  Go through the motions of actually drawing the circle, according to the
+  midpoint and radius specified in the fields.
+  The algorithm used is the Bresenham scan-converted circle algorithm, covered
+  in P.87 of CGPP2/eC, Foley et. all; mathematical description appears therein.
+  The algorithm uses second-order partial differences to compute increments
+  in a decision variable, d.
+  (drawCircle assumes the center of circle is O(0,0), so the point-plotting
+  routine, circlePoints, repositions each point according to the specified
+  centre point.)
+  */
+
+    int x = 0;
+    int y = radius;
+    int d = 1 - radius;
+    int deltaE = 3;
+    int deltaSE = -2 * radius + 5;
+    circlePoints(x, y, g);
+
+    while (y > x) {
+      if (d < 0) {   /* Select E */
+        d += deltaE;
+        deltaE += 2;
+        deltaSE += 2;
+      }
+      else {
+        d += deltaSE; /* Select SE */
+        deltaE += 2;
+        deltaSE += 4;
+        y--;
+      }
+      x++;
+      circlePoints(x, y, g);
+    } /* while */
+  } /* drawCircle */
+
+  protected void circlePoints(int x, int y, Graphics g){
+  /* Plot eight points on the circle, using four-way symmetry.*/
+    writePixel(x, y, g);
+    writePixel(y, x, g);
+    writePixel(y, -x, g);
+    writePixel(x, -y, g);
+    writePixel(-x, -y, g);
+    writePixel(-y, -x, g);
+    writePixel(-y, x, g);
+    writePixel(-x, y, g);
+  }
+
+  protected void writePixel(int x, int y, Graphics g){
+    /* Call AWT to draw the pixel onto the Graphics display */
+    g.drawRect(x + (int)centre.x(), y + (int)centre.y(), 1, 1); // draw a point
+  }
+
+}

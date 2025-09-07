@@ -1,0 +1,126 @@
+package GraphicsPackage;
+
+/**
+* <P>
+* @author Robert Ian Ferguson, CS, Strathclyde, UK.
+*/
+
+/**
+See MIT Introduction to Algorithms,
+Naive matrix multiply: Ch. 16.1 (also 26.1).
+Strassen's algorithm (not used here): Ch. 31.2.
+-rcook
+*/
+public class Matrix {
+
+public int rows = 0;
+public int columns = 0;
+public double [][] m;
+
+
+	public Matrix(int in_rows, int in_columns, double val){
+		rows=in_rows;
+		columns=in_columns;
+		m = new double [rows][columns];
+		for (int i = 0; i < rows; i++ ) {
+			for (int j = 0; j < columns; j++ ) {
+				m[i][j] = val;
+				}//end for j 
+			}//end for i 
+		}//constructor
+
+    
+ 	public Matrix (double [][] in_data) {
+      		rows = in_data.length;
+     		columns = in_data[0].length;
+      		for (int i = 0; i < rows; i++) {
+         		if (in_data[i].length != columns) {
+            	throw new IllegalArgumentException("All rows must have the same length.");
+         			}
+      			}
+      		m = in_data;
+   		}//constructor
+
+
+	public int getRows(){
+		return (rows);
+		}// 
+
+
+	public int getColumns() {
+		return (columns);
+		} 
+
+    
+	public double getElement(int i, int j){
+		return(m[i][j]);
+		}
+
+    
+	public void setElement(int i, int j, double value){
+		m[i][j] = value;
+		}
+
+  /*public static Matrix mult(Matrix a, Matrix b){}*/
+    
+	public Matrix mult(Matrix b){
+		double sum = 0;
+		int i,j,k;
+
+		if (rows != b.columns) {
+      throw new IllegalArgumentException("Matrices are not conformable.");
+			}
+
+		Matrix result = new Matrix(b.rows,columns,0);
+		for (i=0; i < b.rows; i++) {
+			for (j=0; j < columns; j++){
+				sum = 0;
+				for (k=0; k<rows; k++){
+					sum = sum + b.getElement(i,k)*m[k][j];
+				 	}//end for k
+				result.m[i][j]=sum;					
+				}//end for i
+			}//end for j
+		return result;
+		}//end mult
+
+
+	public void transform(Matrix b) {
+		double sum = 0;
+		int i,j,k;
+
+		if (rows != b.columns) {
+      throw new IllegalArgumentException("Matrices are not conformable.");
+			}
+
+		double [][] result = new double[b.rows][columns];
+		for (i=0; i < b.rows; i++) {
+			for (j=0; j < columns; j++){
+				sum = 0;
+				for (k=0; k<rows; k++){
+					sum = sum + b.getElement(i,k)*m[k][j];
+				 	}//end for k
+				result[i][j]=sum;					
+				}//end for i
+			}//end for j
+		m=result;
+		}
+
+    
+	public String toString(){
+		String result = new String("[");
+		for (int i = 0; i < rows; i++ ) {
+			result += "(";
+			for (int j = 0; j < columns; j++ ) {
+				result += m[i][j];
+				if (j != (columns-1)) {
+					result += ", ";
+					}//end if
+				}//end for j 
+			result += ")\r";
+			}//end for i 
+		result += "]";
+		return(result);
+		}// toString
+
+}//end of class Matrix

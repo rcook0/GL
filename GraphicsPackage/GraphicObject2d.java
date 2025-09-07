@@ -1,0 +1,57 @@
+package GraphicsPackage;
+
+/**
+
+* <P>
+* @author Ryan L Cook.
+*/
+
+import java.util.*;
+import java.awt.*;
+
+public class GraphicObject2d implements IGraphicObject2d{
+
+/** Base class for 2d geometric primitives, from which grphical building blocks are derived..
+Inheritors add instance variables and redefine draw(), erase() transform() and add constructors to achieve the
+desired method and allow more complex geometry to be built.
+The base interface does not support an add method because a primitive is supposed to be self-contained.*/
+
+  //Draw and Erase colours, in sRGB colour space (AWT).
+  public static final Color cDraw = new Color(0, 0, 255);
+  public static final Color cErase = new Color(255, 255, 255);
+
+	//Field giving identificational information about the class.
+  private final GraphicObjectIdentifier thisID = new GraphicObjectIdentifier("GraphicObject2d", this);
+  
+	private Point2d localOrigin = new Point2d(0,0);
+	
+	public GraphicObject2d(){
+		localOrigin = new Point2d(0,0);
+		}
+
+	public GraphicObject2d GraphicObject2d(GraphicObject2d go2d){
+		// recycle
+		return go2d;
+	}
+
+	public GraphicObject2d(Point2d p2d){
+		localOrigin = p2d;
+		}
+
+  public GraphicObjectIdentifier getGraphicObject(){
+    return thisID;
+  }
+
+	public void draw(Graphics g){
+		// Subclass may call g.drawLine, and others, and use the following as default.
+    g.setColor(cDraw);
+		}
+
+	public void erase(Graphics g){
+		g.setColor(cErase);
+		}
+
+	public void transform(Transformation2d trans) {
+		localOrigin.transform(trans);
+		}//end transform
+}//end class Shape2d

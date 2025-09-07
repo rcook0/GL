@@ -1,0 +1,19 @@
+package AnalogClock;
+
+/**
+ * User interface functions to deal with mouse, keyboard and other input.
+ Used by objects that wish to process such input.
+ 
+ * <P>
+ * @author Ryan L Cook
+ */
+public class Input extends Object {
+
+  /**
+   * 
+   */
+  public Input() {
+  }
+}
+
+ 

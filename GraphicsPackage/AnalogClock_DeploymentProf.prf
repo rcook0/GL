@@ -1,0 +1,14 @@
+deployManifest=<auto generate>
+deployDependencyAnalyzeAugmentedClasspath=0
+deployGenerateScriptForSettingClasspath=0
+deployAbstract=0
+deployExcludedSources=
+deployProfileFormatVersion=3.0
+deployAsJar=1
+deployCompressed=0
+deployAutoInclude=1
+deployIncludeConnectionProperties=0
+deployRedirectDiagnostics=1
+deployMainClass=Clock.class
+deployArchive=A:\demo\AnalogClock.jar
+deployType=0

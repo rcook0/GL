@@ -1,0 +1,28 @@
+package GraphicsPackage;
+
+import java.math.*;
+
+/**
+ * The IntegerObject class provides a very simple encapsulation of int.
+ * <P>
+ * @author Ryan L Cook
+ */
+public class IntegerObject {
+  private int value;
+
+  /**
+   * Constructor
+   */
+  public IntegerObject(int integerValue) {
+    value = integerValue;
+  }
+
+  public int getValue() {
+    return value;
+  }
+
+  public void setValue(int newValue) {
+    value = newValue;
+  }
+}
+

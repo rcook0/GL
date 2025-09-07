@@ -1,0 +1,91 @@
+package GraphicsPackage;
+
+import java.awt.*;
+import java.util.*;
+
+/**
+* <P>
+* @author Ryan L Cook
+*/
+
+public class Bezier2d extends CompoundGraphicObject2d{
+
+	int segments = 10;
+	double interval = (double)1/segments;
+
+
+	public Bezier2d(){
+    super();
+		}
+
+	public void add(Point2d p){
+		parts.add(p);
+    numberOfParts++;
+		}//end addLine
+
+
+	int fact(int x){
+		if (x == 0) {
+			return 1;
+			} else {
+			return (x * fact(x-1)); 
+			}
+		}//fact
+
+
+	
+	int choice(int n, int i) {
+		return(fact(n)/((fact(i)*fact(n-i))));
+		}//c
+
+
+	double bezier(int i, int n, double t){
+		double bint = choice(n,i) * (double)Math.pow(t,i) *
+    (double)Math.pow((1-t),n-i);
+		return( bint );		
+		}//bezier
+
+
+
+	public void rawdraw(Graphics g){
+		// set colour black
+		double xsrc=((Point2d)parts.get(0)).x();
+		double ysrc=((Point2d)parts.get(0)).y();
+		for (double t=0; t<=1.001 ; t+= interval){
+			double xdest=0;
+			double ydest=0;
+			for (int i=0; i<numberOfParts; i++){
+				double bint = bezier(i,numberOfParts-1,t);
+				xdest += ((Point2d)parts.get(i)).x() * bint;
+				ydest += ((Point2d)parts.get(i)).y() * bint;
+				} //for i
+			g.drawLine((int)xsrc, (int)ysrc, (int)xdest,
+(int)ydest);
+			xsrc=xdest;
+			ysrc=ydest;
+			}//for t
+		}//end rawdraw
+
+
+	public void draw(Graphics g){
+		super.draw(g);
+		rawdraw(g);
+		}//draw
+	
+
+	public void erase(Graphics g){
+		super.erase(g);
+		rawdraw(g);
+		}//draw
+
+
+	public void transform(Transformation2d trans) {
+    for (Enumeration e = parts.elements() ; e.hasMoreElements() ;) {
+         ((Point2d)(e.nextElement())).transform(trans);
+     }
+
+  }//end transform
+
+
+  
+}//end class Bezier2d

@@ -1,0 +1,9 @@
+package GraphicsPackage;
+
+import java.awt.*;
+
+interface IGraphicObject2d extends IGraphicObject{
+
+	public void transform(Transformation2d trans);
+
+}

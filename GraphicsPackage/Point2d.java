@@ -1,0 +1,24 @@
+package GraphicsPackage;
+
+/**
+* <P> 
+* @author Ryan L Cook
+*/
+
+public class Point2d extends Matrix{
+
+	public Point2d(double in_x, double in_y) {
+		super(3,1,1);
+		m[0][0]=in_x;
+		m[1][0]=in_y;
+		}// end constructor
+
+	public double x() {
+		return (m[0][0]);
+		}
+
+	public double y() {
+		return (m[1][0]);
+		}
+
+}//end class Point2

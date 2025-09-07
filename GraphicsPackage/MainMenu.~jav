@@ -1,0 +1,74 @@
+//Main Menu for Analog Clock.
+//
+//Ryan L Cook
+//
+
+package  AnalogClock;
+
+import javax.swing.*;
+import java.awt.event.*;
+
+public class MainMenu extends JMenuBar {
+  JMenu clockMenu = new JMenu();
+  JMenu helpMenu = new JMenu();
+  JMenuItem clockSet = new JMenuItem();
+  JMenuItem clockExit = new JMenuItem();
+  JMenuItem helpAbout = new JMenuItem();
+
+  public MainMenu() {
+    try {
+      jbInit();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void jbInit() throws Exception {
+    clockMenu.setText("File");
+    clockMenu.setLabel("Clock");
+    helpMenu.setText("Help");
+
+    this.add(clockMenu);
+    this.add(helpMenu);
+
+    clockSet.setText("Save As...");
+    clockSet.setLabel("Set...");
+    clockSet.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        clockSet_actionPerformed(e);
+      }
+    });
+    clockExit.setText("Exit");
+    clockExit.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        clockExit_actionPerformed(e);
+      }
+    });
+    helpAbout.setText("About");
+    helpAbout.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        helpAbout_actionPerformed(e);
+      }
+    });
+
+    clockMenu.add(clockSet);
+    clockMenu.addSeparator();
+    clockMenu.add(clockExit);
+    helpMenu.add(helpAbout);
+  }
+
+  void helpAbout_actionPerformed(ActionEvent e) {
+  }
+
+  void clockSet_actionPerformed(ActionEvent e) {
+  }
+
+  void clockExit_actionPerformed(ActionEvent e) {
+    System.exit(0);
+  }
+}
+ 
