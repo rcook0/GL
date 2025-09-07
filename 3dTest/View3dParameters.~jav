@@ -1,0 +1,136 @@
+package View3dTest;
+// Copyright (c) 2001
+import GraphicsPackage.*;
+
+/**
+ * Class for storage of the view parameters associated with an arbitrary view
+   of a 3-dimensional scene.
+ * <P>
+ * @author Ryan Lovbjerg Cook.
+ */
+
+public class View3dParameters extends Object {
+
+  // Fields - these store the viewing parameters.
+
+  private static final int PT_PARALLEL = 0;
+  private static final int PT_PERSPECTIVE = 1;
+  private static int PT_DEFAULT = PT_PERSPECTIVE;
+  private int projectionType = PT_DEFAULT;
+
+  private Point3d vrp;
+  private Vector4d vup = new Vector4d();
+  private Vector4d vpn = new Vector4d();
+  private Point3d prp;
+
+  //Window
+  private double VRCumin = 0;
+  private double VRCumax = 0;
+  private double VRCvmin = 0;
+  private double VRCvmax = 0;
+
+  /**
+   * Constructor
+   */
+
+  public View3dParameters() {
+
+  }
+
+  /* For debugging, return a list of the contents of this object. */
+  public String catalogue() {
+    return "vrp = " + vrp + "vup = " + vup + "vpn = " + vpn
+      + "prp = " + prp + "VRCumin  = " + VRCumin + "VRCumax = " + VRCumax
+      + "VRCvmin = " + VRCvmin + "VRCvmax = " + VRCvmax);
+  }
+
+  public View3dParameters getParameters() {
+    return View3dParameters.this;
+  }
+
+  public void setParameters(View3dParameters parm) {
+    projectionType = parm.projectionType();
+    vrp = parm.vrp();
+    vup = parm.vup();
+    vpn = parm.vpn();
+    prp = parm.prp();
+    VRCumin = parm.VRC_umin();
+    VRCumax = parm.VRC_umax();
+    VRCvmin = parm.VRC_vmin();
+    VRCvmax = parm.VRC_vmax();
+  }
+
+  public Point3d vrp() {
+    return vrp;
+  }
+
+  public void vrp(Point3d new_vrp) {
+    vrp = new_vrp;
+  }
+
+  public Vector4d vup() {
+    return vup;
+  }
+
+  public void vup(Vector4d new_vup) {
+    vup = new_vup;
+  }
+
+  public Vector4d vpn() {
+    return vpn;
+  }
+
+  public void vpn(Vector4d new_vpn) {
+    vpn = new_vpn;
+  }
+
+  public Point3d prp() {
+    return prp;
+  }
+
+  public void prp(Point3d new_prp) {
+    prp = new_prp;
+  }
+
+  public int projectionType() {
+    return projectionType;
+  }
+
+  public void projectionType(int new_projectionType) {
+    projectionType = new_projectionType;
+  }
+
+  public double VRC_umin() {
+    return VRCumin;
+  }
+
+  public double VRC_umax() {
+    return VRCumax;
+  }
+
+  public double VRC_vmin() {
+    return VRCvmin;
+  }
+
+  public double VRC_vmax() {
+    return VRCvmax;
+  }
+
+  public void VRC_umin(double VRC_umin) {
+    VRCumin = VRC_umin;
+  }
+
+  public void VRC_umax(double VRC_umax) {
+    VRCumax = VRC_umax;
+  }
+
+  public void VRC_vmin(double VRC_umin) {
+    VRCvmin = VRC_umin;
+  }
+
+  public void VRC_vmax(double VRC_vmax) {
+    VRCvmax = VRC_vmax;
+  }
+
+}
+

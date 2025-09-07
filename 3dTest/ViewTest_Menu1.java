@@ -1,0 +1,110 @@
+package View3dTest;
+/**
+Main Menu for Analog file.
+* <P>
+* @author Ryan L Cook.
+*/
+import javax.swing.*;
+import java.awt.event.*;
+
+public class ViewTest_Menu1 extends JMenuBar {
+  JMenu file = new JMenu();
+  JMenu edit = new JMenu();
+  JMenu help = new JMenu();
+  JMenuItem fileLoadGeom = new JMenuItem();
+  JMenuItem fileExit = new JMenuItem();
+  JMenuItem editSetParameters = new JMenuItem();
+  JMenuItem helpAbout = new JMenuItem();
+  JMenuItem helpAboutGP = new JMenuItem();
+
+  EditViewParamsDlg vp;
+  View3dTest parentFrm;
+
+  public ViewTest_Menu1(View3dTest parent) {
+    try {
+      jbInit();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    parentFrm = parent;
+  }
+
+  private void jbInit() throws Exception {
+    file.setText("File");
+    file.setLabel("File");
+    edit.setText("Edit");
+    edit.setLabel("Edit");
+    help.setText("Help");
+    help.setLabel("Help");
+
+    this.add(file);
+    this.add(edit);
+    this.add(help);
+
+    fileLoadGeom.setText("Load new geometry...");
+    fileLoadGeom.setLabel("Load new geometry...");
+    fileLoadGeom.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        fileLoadGeom_actionPerformed(e);
+      }
+    });
+    fileExit.setText("Exit");
+    fileExit.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        fileExit_actionPerformed(e);
+      }
+    });
+    editSetParameters.setText("Set viewing parameters...");
+    editSetParameters.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        editSetParameters_actionPerformed(e);
+      }
+    });
+    helpAbout.setText("About 3dTest");
+    helpAbout.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        helpAbout_actionPerformed(e);
+      }
+    });
+    helpAboutGP.setText("About GraphicsPackage");
+    helpAboutGP.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        helpAbout_actionPerformed(e);
+      }
+    });
+
+    file.add(fileLoadGeom);
+    file.addSeparator();
+    file.add(fileExit);
+    edit.add(editSetParameters);
+    help.add(helpAbout);
+    help.add(helpAboutGP);
+  }
+
+  void helpAbout_actionPerformed(ActionEvent e) {
+  }
+
+  void helpAboutGP_actionPerformed(ActionEvent e) {
+  }
+
+  void editSetParameters_actionPerformed(ActionEvent e) {
+    vp = new EditViewParamsDlg(parentFrm, new String("Edit viewing parameters..."), true);
+    vp.setLocationRelativeTo(parentFrm);
+    vp.setVisible(true);
+  }
+
+  void fileLoadGeom_actionPerformed(ActionEvent e) {
+  }
+
+  void fileExit_actionPerformed(ActionEvent e) {
+    System.exit(0);
+  }
+
+}
+

@@ -1,0 +1,38 @@
+
+// Copyright (c) 2001 
+package View3dTest;
+
+/**
+ * A Class class.
+ * <P>
+ * @author Ryan Lovbjerg Cook.
+ */
+public class View3dParameters extends Object {
+
+  // Fields - these store the viewing parameters.
+
+
+  private static final int PT_PARALLEL = 0;
+  private static final int PT_PERSPECTIVE = 1;
+  private static int PT_DEFAULT = PT_PERSPECTIVE;
+  private int projectionType = PT_DEFAULT;
+
+  Point3d vrp = new Vector4d();
+  Vector4d vup = new Vector4d();
+  Vector4d vpn = new Vector4d();
+  Point3d prp = new Point3d();
+  
+  double VRCumin = 0;
+  double VRCumax = 0;
+  double VRCvmin = 0;
+  double VRCvmax = 0;
+  
+
+  /**
+   * Constructor
+   */
+  public ViewParamsData() {
+  }
+}
+
+ 
