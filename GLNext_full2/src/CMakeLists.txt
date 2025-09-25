@@ -1,8 +1,0 @@
-cmake_minimum_required(VERSION 3.16)
-project(D3D11RendererTest)
-set(CMAKE_CXX_STANDARD 17)
-add_executable(d3dtest main.cpp D3D11Renderer.cpp Buffer.hpp)
-if (MSVC)
-    target_compile_definitions(d3dtest PRIVATE -DWIN32_LEAN_AND_MEAN)
-    target_link_libraries(d3dtest d3d11 dxgi d3dcompiler)
-endif()
