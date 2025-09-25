@@ -1,23 +1,8 @@
-set(SOURCES
-    RendererD3D12.cpp
-    RendererVulkan.cpp
-    Scene.cpp
-    RenderGraph.cpp
-)
-
-add_library(glnext STATIC ${SOURCES})
-target_include_directories(glnext PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${Vulkan_INCLUDE_DIRS}
-)
-target_link_libraries(glnext PUBLIC
-    ${Vulkan_LIBRARIES}
-    glfw
-)
-if(WIN32)
-  target_link_libraries(glnext PUBLIC d3d12 dxgi)
+cmake_minimum_required(VERSION 3.16)
+project(D3D11RendererTest)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(d3dtest main.cpp D3D11Renderer.cpp Buffer.hpp)
+if (MSVC)
+    target_compile_definitions(d3dtest PRIVATE -DWIN32_LEAN_AND_MEAN)
+    target_link_libraries(d3dtest d3d11 dxgi d3dcompiler)
 endif()
-
-# Demo executable
-add_executable(glnext_demo main.cpp)
-target_link_libraries(glnext_demo PRIVATE glnext)
