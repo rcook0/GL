@@ -1,0 +1,153 @@
+#pragma once
+#include <vector>
+#include <string>
+#include <fstream>
+#include <stdexcept>
+#include <type_traits>
+#include <cstdint>
+#include <cctype> 
+
+#ifdef USE_STB_IMAGE_WRITE
+#include "stb_image_write.h"
+#endif
+
+template<typename PixelT=uint8_t>
+class RasterBuffer {
+public:
+    int width, height, channels; // channels = 1 (gray) or 3 (RGB) or 4 (RGBA)
+    std::vector<PixelT> data;
+    std::vector<double> depth; // Z-buffer
+
+    RasterBuffer(int w, int h, int c=1, PixelT clear=0, bool enableDepth=false)
+        : width(w), height(h), channels(c), data(w*h*c, clear),
+          depth(enableDepth ? std::vector<double>(w*h, 1e9) : std::vector<double>()) {
+        if (w<=0 || h<=0 || (c!=1 && c!=3 && c!=4)) {
+            throw std::runtime_error("RasterBuffer: invalid dimensions or channels");
+        }
+    }
+
+    inline bool has_depth() const { return !depth.empty(); }
+    inline void clear_depth(double val=1e9) {
+        if (has_depth()) std::fill(depth.begin(), depth.end(), val);
+    }
+
+    inline bool in_bounds(int x,int y) const {
+        return (x>=0 && x<width && y>=0 && y<height);
+    }
+
+    inline bool test_and_set_depth(int x, int y, double z) {
+        if (!has_depth() || !in_bounds(x,y)) return true;
+        size_t idx = (size_t)y*width + x;
+        if (z < depth[idx]) { depth[idx] = z; return true; }
+        return false; // occluded
+    }
+
+    void save_png(const std::string& filename) const {
+    #ifndef USE_STB_IMAGE_WRITE
+        throw std::runtime_error("RasterBuffer: stb_image_write not enabled");
+    #else
+        if (channels == 1) {
+            // Save grayscale as 3-channel
+            std::vector<uint8_t> rgb(width*height*3);
+            for (int i=0;i<width*height;i++) {
+                rgb[i*3+0] = data[i];
+                rgb[i*3+1] = data[i];
+                rgb[i*3+2] = data[i];
+            }
+            stbi_write_png(filename.c_str(), width, height, 3, rgb.data(), width*3);
+        } else {
+            stbi_write_png(filename.c_str(), width, height, channels,
+                           data.data(), width*channels);
+        }
+    #endif
+    }
+
+
+    // --- Set pixel (grayscale, RGB, RGBA) ---
+    void set_pixel(int x,int y, PixelT gray) {
+        if (!in_bounds(x,y)) return;
+        size_t idx = ((size_t)y*width + x)*channels;
+        if (channels==1) {
+            data[idx] = gray;
+        } else {
+            for (int c=0;c<channels;++c) data[idx+c] = gray;
+        }
+    }
+
+    void set_pixel(int x,int y, PixelT r, PixelT g, PixelT b, PixelT a=255) {
+        if (!in_bounds(x,y)) return;
+        size_t idx = ((size_t)y*width + x)*channels;
+        if (channels==3) {
+            data[idx+0]=r; data[idx+1]=g; data[idx+2]=b;
+        } else if (channels==4) {
+            data[idx+0]=r; data[idx+1]=g; data[idx+2]=b; data[idx+3]=a;
+        } else if (channels==1) {
+            // fallback to grayscale
+            data[idx] = (PixelT)((r+g+b)/3);
+        }
+    }
+
+    inline void get_pixel(int x, int y, PixelT& r, PixelT& g, PixelT& b, PixelT& a) const {
+        r=g=b=0; a=255;
+        if (!in_bounds(x,y)) return;
+        size_t idx = (static_cast<size_t>(y)*width + x) * channels;
+        if (channels==1) {
+            r = data[idx];
+            g = b = r; a = 255;
+        } else if (channels==3) {
+            r=data[idx]; g=data[idx+1]; b=data[idx+2]; a=255;
+        } else {
+            r=data[idx]; g=data[idx+1]; b=data[idx+2]; a=data[idx+3];
+        }
+    }
+
+    // --- Save as PPM (RGB only, ignores alpha) ---
+    void save_ppm(const std::string& filename) const {
+        std::ofstream ofs(filename, std::ios::binary);
+        if (!ofs) throw std::runtime_error("RasterBuffer: cannot open file");
+
+        if (channels==1) {
+            ofs << "P5\n" << width << " " << height << "\n255\n";
+            ofs.write((char*)data.data(), data.size());
+        } else {
+            ofs << "P6\n" << width << " " << height << "\n255\n";
+            for (int i=0;i<width*height;i++) {
+                PixelT r = data[i*channels+0];
+                PixelT g = data[i*channels+ (channels>1?1:0)];
+                PixelT b = data[i*channels+ (channels>2?2:0)];
+                ofs.put((char)r); ofs.put((char)g); ofs.put((char)b);
+            }
+        }
+    }
+
+    // Utility: lowercase a string
+inline std::string toLower(const std::string& s) {
+    std::string out = s;
+    for (auto& c : out) c = (char)std::tolower((unsigned char)c);
+    return out;
+}
+
+    void save_image(const std::string& filename) const {
+    std::string ext;
+    size_t dot = filename.find_last_of('.');
+    if (dot != std::string::npos) ext = toLower(filename.substr(dot+1));
+
+    if (ext == "ppm") {
+        save_ppm(filename);
+        return;
+    }
+#ifdef USE_STB_IMAGE_WRITE
+    if (ext == "png") {
+        save_png(filename);
+        return;
+    }
+    if (ext == "jpg" || ext == "jpeg") {
+        int quality = 90; // default
+        stbi_write_jpg(filename.c_str(), width, height, channels,
+                       data.data(), quality);
+        return;
+    }
+#endif
+    throw std::runtime_error("RasterBuffer: unsupported extension: " + ext);
+}
+};
